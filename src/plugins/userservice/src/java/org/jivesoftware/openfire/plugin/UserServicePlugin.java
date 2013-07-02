@@ -32,6 +32,7 @@ import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.container.Plugin;
 import org.jivesoftware.openfire.container.PluginManager;
 import org.jivesoftware.openfire.group.Group;
+import org.jivesoftware.openfire.group.GroupAlreadyExistsException;
 import org.jivesoftware.openfire.group.GroupManager;
 import org.jivesoftware.openfire.group.GroupNotFoundException;
 import org.jivesoftware.openfire.lockout.LockOutManager;
@@ -157,7 +158,11 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
                 try {
                     newGroups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
                 } catch (GroupNotFoundException e) {
-                    // Ignore this group
+                	try {
+                		newGroups.add(GroupManager.getInstance().createGroup(tkn.nextToken()));
+                	} catch (GroupAlreadyExistsException e2) {
+                		// ignore this error
+                	}
                 }
             }
 

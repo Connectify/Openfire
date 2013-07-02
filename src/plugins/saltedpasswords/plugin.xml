@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin>
+   <class>org.jivesoftware.openfire.plugin.SaltedPasswords</class>
+   <name>Salted Passwords</name>
+   <description>Allows salted hashed passwords to be used.</description>
+   <author>CSchulz (http://community.igniterealtime.org/thread/30189)</author>
+   <version>1.0.0</version>
+   <date>7/1/2013</date>
+   <minServerVersion>3.7.0</minServerVersion>
+</plugin>
+
