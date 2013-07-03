@@ -396,9 +396,11 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
         try {
             Group g = GroupManager.getInstance().getGroup(group);
             if (g != null) {
-                g.getProperties().put("sharedRoster.showInRoster", "onlyGroup");
+                g.getProperties().put("sharedRoster.showInRoster", (sharedGroup != null ? "onlyGroup" : "everybody"));
                 g.getProperties().put("sharedRster.displayName", group);
-                g.getProperties().put("sharedRoster.groupList", sharedGroup);
+                if (sharedGroup != null) {
+                    g.getProperties().put("sharedRoster.groupList", sharedGroup);
+                }
                 return true;
             }
         } catch (GroupNotFoundException gnfe) {
