@@ -102,6 +102,8 @@ public class UserServiceServlet extends HttpServlet {
         String groupNames = request.getParameter("groups");
         String item_jid = request.getParameter("item_jid");
         String sub = request.getParameter("subscription");
+        String group = request.getParameter("group");
+        String sharedGroup = request.getParameter("shared_group");
         //No defaults, add, delete, update only
         //type = type == null ? "image" : type;
        
@@ -120,7 +122,7 @@ public class UserServiceServlet extends HttpServlet {
          }
 
         // Some checking is required on the username
-        if (username == null){
+        if (username == null && !type.equals("set_shared_group")){
             replyError("IllegalArgumentException",response, out);
             return;
         }
@@ -134,9 +136,11 @@ public class UserServiceServlet extends HttpServlet {
 
         // Check the request type and process accordingly
         try {
-            username = username.trim().toLowerCase();
-            username = JID.escapeNode(username);
-            username = Stringprep.nodeprep(username);
+            if (username != null) {
+                username = username.trim().toLowerCase();
+                username = JID.escapeNode(username);
+                username = Stringprep.nodeprep(username);
+            }
             if ("add".equals(type)) {
                 plugin.createUser(username, password, name, email, groupNames);
                 replyMessage("ok",response, out);
@@ -170,6 +174,9 @@ public class UserServiceServlet extends HttpServlet {
             }
             else if ("delete_roster".equals(type)) {
                 plugin.deleteRosterItem(username, item_jid);
+                replyMessage("ok",response, out);
+            } else if ("set_shared_group".equals(type)) {
+                plugin.setSharedGroup(group, sharedGroup);
                 replyMessage("ok",response, out);
             }
             else {

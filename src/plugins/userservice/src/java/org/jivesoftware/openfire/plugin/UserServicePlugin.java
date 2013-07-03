@@ -391,4 +391,19 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
     public void xmlPropertyDeleted(String property, Map<String, Object> params) {
         // Do nothing
     }
+
+    public boolean setSharedGroup(String group, String sharedGroup) {
+        try {
+            Group g = GroupManager.getInstance().getGroup(group);
+            if (g != null) {
+                g.getProperties().put("sharedRoster.showInRoster", "onlyGroup");
+                g.getProperties().put("sharedRster.displayName", group);
+                g.getProperties().put("sharedRoster.groupList", sharedGroup);
+                return true;
+            }
+        } catch (GroupNotFoundException gnfe) {
+            // ignore this error
+        } 
+        return false;
+    }
 }

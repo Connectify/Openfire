@@ -95,14 +95,14 @@ The following parameters can be passed into the request:<p>
 </tr>
 <tr>
     <td class="name">type</td><td>Required</td><td>The admin service required. 
-    Possible values are 'add', 'delete', 'update', 'enable', 'disable', 'add_roster', 'update_roster', 'delete_roster'.</td>
+    Possible values are 'add', 'delete', 'update', 'enable', 'disable', 'add_roster', 'update_roster', 'delete_roster', 'set_shared_roster'.</td>
 </tr>
 <tr>
     <td class="name">secret</td><td>Required</td>
     <td>The secret key that allows access to the User Service.</td>
 </tr>
 <tr>
-    <td class="name">username</td><td>Required</td>
+    <td class="name">username</td><td>Required (except for set_shared_group)</td>
     <td>The username of the user to 'add', 'delete', 'update', 'enable', 'disable', 'add_roster', 'update_roster', 'delete_roster'. ie the part before the @ symbol.</td>
 </tr>
 <tr>
@@ -129,7 +129,14 @@ The following parameters can be passed into the request:<p>
     <td class="name">subscription</td><td>Optional</td>
     <td>Type of subscription for 'add_roster', 'update_roster' operations. Possible numeric values are: -1(remove), 0(none), 1(to), 2(from), 3(both).</td>
 </tr>
-
+<tr>
+    <td class="name">group</td><td>Optional (only applies to set_shared_group)</td>
+    <td>Name of the group to set as shared.</td>
+</tr>
+<tr>
+    <td class="name">shared_group</td><td>Optional (only applies to set_shared_group)</td>
+    <td>Another group to which group is shared</td>
+</tr>
 
 </table><p>
 
