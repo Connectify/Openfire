@@ -103,7 +103,11 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
                 try {
                     groups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
                 } catch (GroupNotFoundException e) {
-                    // Ignore this group
+                    try {
+                		groups.add(GroupManager.getInstance().createGroup(tkn.nextToken()));
+                	} catch (GroupAlreadyExistsException e2) {
+                		// ignore this error
+                	}
                 }
             }
             for (Group group : groups) {
