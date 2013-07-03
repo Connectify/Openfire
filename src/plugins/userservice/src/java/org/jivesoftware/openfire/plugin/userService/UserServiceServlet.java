@@ -136,52 +136,45 @@ public class UserServiceServlet extends HttpServlet {
 
         // Check the request type and process accordingly
         try {
-            if (username != null) {
+            if ("set_shared_group".equals(type)) {
+                plugin.setSharedGroup(group, sharedGroup);
+                replyMessage("ok",response, out);
+            } else {
                 username = username.trim().toLowerCase();
                 username = JID.escapeNode(username);
                 username = Stringprep.nodeprep(username);
-            }
-            if ("add".equals(type)) {
-                plugin.createUser(username, password, name, email, groupNames);
-                replyMessage("ok",response, out);
-                //imageProvider.sendInfo(request, response, presence);
-            }
-            else if ("delete".equals(type)) {
-                plugin.deleteUser(username);
-                replyMessage("ok",response,out);
-                //xmlProvider.sendInfo(request, response, presence);
-            }
-            else if ("enable".equals(type)) {
-                plugin.enableUser(username);
-                replyMessage("ok",response,out);
-            }
-            else if ("disable".equals(type)) {
-                plugin.disableUser(username);
-                replyMessage("ok",response,out);
-            }
-            else if ("update".equals(type)) {
-                plugin.updateUser(username, password,name,email, groupNames);
-                replyMessage("ok",response,out);
-                //xmlProvider.sendInfo(request, response, presence);
-            }
-            else if ("add_roster".equals(type)) {
-                plugin.addRosterItem(username, item_jid, name, sub, groupNames);
-                replyMessage("ok",response, out);
-            }
-            else if ("update_roster".equals(type)) {
-                plugin.updateRosterItem(username, item_jid, name, sub, groupNames);
-                replyMessage("ok",response, out);
-            }
-            else if ("delete_roster".equals(type)) {
-                plugin.deleteRosterItem(username, item_jid);
-                replyMessage("ok",response, out);
-            } else if ("set_shared_group".equals(type)) {
-                plugin.setSharedGroup(group, sharedGroup);
-                replyMessage("ok",response, out);
-            }
-            else {
-                Log.warn("The userService servlet received an invalid request of type: " + type);
-                // TODO Do something
+
+                if ("add".equals(type)) {
+                    plugin.createUser(username, password, name, email, groupNames);
+                    replyMessage("ok", response, out);
+                    //imageProvider.sendInfo(request, response, presence);
+                } else if ("delete".equals(type)) {
+                    plugin.deleteUser(username);
+                    replyMessage("ok", response, out);
+                    //xmlProvider.sendInfo(request, response, presence);
+                } else if ("enable".equals(type)) {
+                    plugin.enableUser(username);
+                    replyMessage("ok", response, out);
+                } else if ("disable".equals(type)) {
+                    plugin.disableUser(username);
+                    replyMessage("ok", response, out);
+                } else if ("update".equals(type)) {
+                    plugin.updateUser(username, password, name, email, groupNames);
+                    replyMessage("ok", response, out);
+                    //xmlProvider.sendInfo(request, response, presence);
+                } else if ("add_roster".equals(type)) {
+                    plugin.addRosterItem(username, item_jid, name, sub, groupNames);
+                    replyMessage("ok", response, out);
+                } else if ("update_roster".equals(type)) {
+                    plugin.updateRosterItem(username, item_jid, name, sub, groupNames);
+                    replyMessage("ok", response, out);
+                } else if ("delete_roster".equals(type)) {
+                    plugin.deleteRosterItem(username, item_jid);
+                    replyMessage("ok", response, out);
+                } else {
+                    Log.warn("The userService servlet received an invalid request of type: " + type);
+                    // TODO Do something
+                }
             }
         }
         catch (UserAlreadyExistsException e) {
