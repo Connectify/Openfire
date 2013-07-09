@@ -44,6 +44,7 @@ import org.jivesoftware.openfire.user.UserAlreadyExistsException;
 import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.openfire.user.UserNotFoundException;
 import org.jivesoftware.util.JiveGlobals;
+import org.jivesoftware.util.Log;
 import org.jivesoftware.util.PropertyEventDispatcher;
 import org.jivesoftware.util.PropertyEventListener;
 import org.jivesoftware.util.StringUtils;
@@ -90,6 +91,23 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
         // Stop listening to system property events
         PropertyEventDispatcher.removeListener(this);
     }
+    
+    public Group getGroup(String groupName) {
+        Group newGroup = null;
+        try {
+            newGroup = GroupManager.getInstance().getGroup(groupName);
+        } catch (GroupNotFoundException gnfe) {
+            try {
+                newGroup = GroupManager.getInstance().createGroup(groupName);
+            } catch (GroupAlreadyExistsException gaee) {
+                // ignore this error
+            } catch (Exception e) {
+                Log.warn("Unable to find or create group " + groupName + ", exception " + e.toString());
+            }
+        }
+        
+        return newGroup;
+    }
 
     public void createUser(String username, String password, String name, String email, String groupNames)
             throws UserAlreadyExistsException
@@ -100,15 +118,10 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
             Collection<Group> groups = new ArrayList<Group>();
             StringTokenizer tkn = new StringTokenizer(groupNames, ",");
             while (tkn.hasMoreTokens()) {
-                try {
-                    groups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
-                } catch (GroupNotFoundException e) {
-                    try {
-                		groups.add(GroupManager.getInstance().createGroup(tkn.nextToken()));
-                	} catch (GroupAlreadyExistsException e2) {
-                		// ignore this error
-                	}
-                }
+                Group newGroup = getGroup(tkn.nextToken());
+                if (newGroup != null) {
+                    groups.add(newGroup);                
+                }              
             }
             for (Group group : groups) {
                 group.getMembers().add(server.createJID(username, null));
@@ -159,14 +172,9 @@ public class UserServicePlugin implements Plugin, PropertyEventListener {
             Collection<Group> newGroups = new ArrayList<Group>();
             StringTokenizer tkn = new StringTokenizer(groupNames, ",");
             while (tkn.hasMoreTokens()) {
-                try {
-                    newGroups.add(GroupManager.getInstance().getGroup(tkn.nextToken()));
-                } catch (GroupNotFoundException e) {
-                	try {
-                		newGroups.add(GroupManager.getInstance().createGroup(tkn.nextToken()));
-                	} catch (GroupAlreadyExistsException e2) {
-                		// ignore this error
-                	}
+                Group newGroup = getGroup(tkn.nextToken());
+                if (newGroup != null) {
+                    newGroups.add(newGroup);                
                 }
             }
 
