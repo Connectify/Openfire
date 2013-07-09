@@ -174,7 +174,6 @@ public class SaltingJDBCAuthProvider extends ExtendedJDBCAuthProvider {
             	}
             	
             	String salt = getSaltValue(username);
-            	Log.error("checking "+username+", salt "+salt+", hashed "+userPassword);
             	if (saltPosition == SaltPosition.before) {
             		userPassword = salt + userPassword;
             	} else
@@ -213,12 +212,9 @@ public class SaltingJDBCAuthProvider extends ExtendedJDBCAuthProvider {
         ResultSet rs = null;
 
         try {
-            Log.error("Finding salt with connectionString "+connectionString+", SQL="+saltSQL);
             con = DriverManager.getConnection(connectionString);
             pstmt = con.prepareStatement(saltSQL);
             pstmt.setString(1, username);
-            
-            Log.error("Finding salt for "+username+", SQL="+pstmt.toString());
 
             rs = pstmt.executeQuery();
 
