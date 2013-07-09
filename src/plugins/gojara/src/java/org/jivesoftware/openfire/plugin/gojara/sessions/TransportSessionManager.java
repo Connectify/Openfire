@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.jivesoftware.openfire.plugin.gojara.database.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmpp.packet.JID;
 
 /**
  * This is the central point for doing anything Gojara GatewaySession related. We keep track of Users connected to
@@ -46,7 +45,7 @@ public class TransportSessionManager {
 	 */
 	public void addTransport(String subdomain) {
 		transportSessions.put(subdomain, new ConcurrentHashMap<String, Long>(64, 0.75f, 1));
-		Log.info("Added key to transportSessionMap: " + subdomain);
+		Log.debug("Added key to transportSessionMap: " + subdomain);
 	}
 
 	/**
@@ -56,7 +55,7 @@ public class TransportSessionManager {
 	 */
 	public void removeTransport(String subdomain) {
 		Map<String, Long> disconnectedUsers = transportSessions.remove(subdomain);
-		Log.info("Removed " + subdomain + "from TransportSessionMap " + disconnectedUsers.toString());
+		Log.debug("Removed " + subdomain + "from TransportSessionMap " + disconnectedUsers.toString());
 
 	}
 
@@ -94,7 +93,7 @@ public class TransportSessionManager {
 	}
 
 	public boolean disconnectUserFrom(String transport, String user) {
-		Log.info("Trying to remove User " + JID.nodeprep(user) + " from Session for Transport " + transport);
+//		Log.debug("Trying to remove User " + JID.nodeprep(user) + " from Session for Transport " + transport);
 		if (isUserConnectedTo(transport, user)) {
 			transportSessions.get(transport).remove(user);
 			return true;
@@ -116,7 +115,6 @@ public class TransportSessionManager {
 	 * @return String that describes what happened.
 	 */
 	public String removeRegistrationOfUser(String transport, String user) {
-		if (transportSessions.containsKey(transport)) {
 			adminManager.unregisterUserFrom(transport, user);
 			int result = db.removeSessionEntry(transport, user);
 			if (result == 0) {
@@ -126,10 +124,6 @@ public class TransportSessionManager {
 			} else {
 				return "What is happening ???: " + result;
 			}
-		} else {
-			return "Cannot Unregister user " + user + " from " + transport + " when it's inactive.";
-		}
-
 	}
 
 	/**
@@ -137,7 +131,7 @@ public class TransportSessionManager {
 	 * transportSessions
 	 */
 	public void initializeSessions() {
-		Log.info("initializing Sessions.");
+		Log.info("Initializing Sessions.");
 		for (String transport : transportSessions.keySet()) {
 			adminManager.getOnlineUsersOf(transport);
 		}

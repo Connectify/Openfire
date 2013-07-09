@@ -78,14 +78,10 @@ public class GojaraAdminManager {
 		// Spectrum2 Stats jsp
 		getGatewayStatisticsMap().put(gateway, new HashMap<String, Integer>());
 
-		Message message = new Message();
-		message.setFrom(adminUser);
-		message.setTo(gateway);
-		message.setID("config_check");
+		Message message = generateCommand(gateway, "config_check");
 		message.setBody("status");
-		message.setType(Type.chat);
 		router.route(message);
-		Log.info("Sent config_check Packet!");
+		Log.info("Checking for admin configuration on " + gateway);
 	}
 
 	/**
@@ -96,6 +92,7 @@ public class GojaraAdminManager {
 	public void confirmGatewayConfig(String gateway) {
 		unconfiguredGateways.remove(gateway);
 		configuredGateways.add(gateway);
+		gatherGatewayStatistics(gateway);
 	}
 
 	/**
@@ -111,7 +108,7 @@ public class GojaraAdminManager {
 	public boolean areGatewaysConfigured() {
 		return unconfiguredGateways.isEmpty();
 	}
-
+	
 	public boolean isGatewayConfigured(String gateway) {
 		return configuredGateways.contains(gateway);
 	}
@@ -147,7 +144,7 @@ public class GojaraAdminManager {
 
 		Message message = generateCommand(transport, "online_users");
 		router.route(message);
-		Log.info("Sent online_users Packet!" + message.toString());
+		Log.debug("Sent online_users Packet!" + message.toString());
 	}
 
 	/**
@@ -163,7 +160,7 @@ public class GojaraAdminManager {
 		Message message = generateCommand(transport, "unregister");
 		message.setBody("unregister " + _server.createJID(user, null).toString());
 		router.route(message);
-		Log.info("Sent Unregister Packet!" + message.toString());
+		Log.debug("Sent Unregister Packet!" + message.toString());
 
 	}
 
@@ -175,6 +172,9 @@ public class GojaraAdminManager {
 		this.gatewayStatisticsMap = gatewayStatisticsMap;
 	}
 
+	/**
+	 * For JSP usage, dont refresh statistics more than once a minute
+	 */
 	public void gatherGatewayStatistics() {
 		if (refreshCooldown == 0) {
 			refreshCooldown = System.currentTimeMillis();
@@ -186,16 +186,24 @@ public class GojaraAdminManager {
 
 		refreshCooldown = System.currentTimeMillis();
 
-		Log.info("Gathering Gateway-Statistics!");
 		for (String gateway : configuredGateways) {
+			gatherGatewayStatistics(gateway);
+		}
+	}
+	
+	/**
+	 * gathers Gatewaystatistics for specific gateway
+	 * @param gateway
+	 */
+	public void gatherGatewayStatistics(String gateway) {
 			uptime(gateway);
 			messagesFrom(gateway);
 			messagesTo(gateway);
 			usedMemoryOf(gateway);
 			averageMemoryOfUser(gateway);
-		}
+//			Log.info("Gathering Gateway-Statistics for " + gateway);
 	}
-
+	
 	private void uptime(String transport) {
 		Message message = generateCommand(transport, "uptime");
 		router.route(message);

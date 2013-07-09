@@ -36,6 +36,8 @@
 <meta name="pageID" content="gojaraRegistrationAdministration" />
 </head>
 <body>
+	<div align="center">
+	<ul style="list-style: none;padding:0;margin:0;">
 	<%
 		//do unregisters if supplied
 		if (request.getParameterMap() != null) {
@@ -47,24 +49,27 @@
 				String[] uservalues = request.getParameterValues(key.toString());
 				for (String transport : uservalues) {
 	%>
-	<ul>
-		<%=transportManager.removeRegistrationOfUser(transport, key.toString())%>
-	</ul>
+	<li><%=transportManager.removeRegistrationOfUser(transport, key.toString())%></li>
 	<%
 		}
 			}
 		}
 	%>
+	</ul>
+	</div>
 
 
-	<center>
+	<div align="center">
 	<% if (!gojaraAdminManager.areGatewaysConfigured()) {%>
-		<h2 style="color:red">Warning: Not all Gateways are configured for admin usage. This means unregistrations will not be properly executed.<br/>
-		 Please configure admin_jid = gojaraadmin@yourdomain in Spectrum2 transport configuration.</h2>
+		<h2><a href="gojara-gatewayStatistics.jsp">Warning: Not all Gateways are configured for admin usage. This means unregistrations will not be properly executed.<br/>
+		 Please configure admin_jid = gojaraadmin@yourdomain in Spectrum2 transport configuration.</a></h2>
 	 <% } %>
 		<h5>Logintime 1970 means User did register but never logged in,
 			propably because of invalid credentials.</h5>
-	</center>
+			<br>
+			<br>
+		Registrations total: <b style="font-size:150%"><%=transportManager.getNumberOfRegistrations()%></b><br>
+	</div>
 	<br>
 	<%
 		//Here we do our nice query
@@ -89,7 +94,6 @@
 			next_items = numOfSessions;
 	%>
 	<p>
-		Registrations total: <b><%=transportManager.getNumberOfRegistrations()%></b><br>
 		<br> Pages: [
 		<%
 			for (int i = 1; i <= numOfPages; i++) {
@@ -167,9 +171,9 @@
 			]
 		</p>
 		<br>
-		<center>
+		<div align="center">
 			<input type="submit" value="Unregister">
-		</center>
+		</div>
 	</form>
 </body>
 </html>
