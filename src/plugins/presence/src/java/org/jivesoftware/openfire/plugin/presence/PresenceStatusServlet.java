@@ -35,6 +35,7 @@ import org.jivesoftware.admin.AuthCheckFilter;
 import org.jivesoftware.openfire.XMPPServer;
 import org.jivesoftware.openfire.plugin.PresencePlugin;
 import org.jivesoftware.openfire.user.UserNotFoundException;
+import org.jivesoftware.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.packet.Presence;
@@ -88,11 +89,19 @@ public class PresenceStatusServlet extends HttpServlet {
     @Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String secret = request.getParameter("secret");
         String sender = request.getParameter("req_jid");
         String jid = request.getParameter("jid");
         String type = request.getParameter("type");
         type = type == null ? "image" : type;
-
+        
+                // Check this request is authorised
+        if (secret == null || !secret.equals(plugin.getSecret())){
+            Log.warn("An unauthorised presence request was received: " + request.getQueryString());
+            //replyError("RequestNotAuthorised",response, out);
+            return;
+        }
+        
         try {
             Presence presence = plugin.getPresence(sender, jid);
             if ("image".equals(type)) {

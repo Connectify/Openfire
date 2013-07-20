@@ -32,6 +32,7 @@ import org.jivesoftware.openfire.user.User;
 import org.jivesoftware.openfire.user.UserManager;
 import org.jivesoftware.openfire.user.UserNotFoundException;
 import org.jivesoftware.util.JiveGlobals;
+import org.jivesoftware.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmpp.component.Component;
@@ -72,6 +73,7 @@ public class PresencePlugin implements Plugin, Component {
     private String hostname;
     private Map<String, Presence> probedPresence;
     private JID componentJID;
+    private String secret;
 
     public void initializePlugin(PluginManager manager, File pluginDirectory) {
         pluginManager = manager;
@@ -81,6 +83,14 @@ public class PresencePlugin implements Plugin, Component {
         hostname = server.getServerInfo().getXMPPDomain();
         probedPresence = new ConcurrentHashMap<String, Presence>();
         componentJID = new JID(subdomain + "." + hostname);
+        
+        secret = JiveGlobals.getProperty("plugin.presence.secret", "");
+        // If no secret key has been assigned to the user service yet, assign a random one.
+        if (secret.equals("")){
+            secret = StringUtils.randomString(8);
+            setSecret(secret);
+        }
+        
         // Register new component
         componentManager = ComponentManagerFactory.getComponentManager();
         try {
@@ -248,5 +258,24 @@ public class PresencePlugin implements Plugin, Component {
         }
         User user = userManager.getUser(targetJID.getNode());
         return presenceManager.getPresence(user);
+    }
+    
+    /**
+     * Returns the secret key that only valid requests should know.
+     *
+     * @return the secret key.
+     */
+    public String getSecret() {
+        return secret;
+    }
+
+    /**
+     * Sets the secret key that grants permission to use the userservice.
+     *
+     * @param secret the secret key.
+     */
+    public void setSecret(String secret) {
+        JiveGlobals.setProperty("plugin.presence.secret", secret);
+        this.secret = secret;
     }
 }
